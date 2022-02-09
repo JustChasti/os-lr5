@@ -1,7 +1,5 @@
 import psutil
-from typing import Counter
-from win32.win32api import GlobalMemoryStatus, OpenProcess, GetModuleHandle
-from win32 import win32process
+from win32.win32api import GlobalMemoryStatus
 import matplotlib.pyplot as plt
 import pymem
 from loguru import logger
@@ -37,15 +35,6 @@ def first():
 
 
 def second():
-    info = pymem.ressources.structure.MEMORY_BASIC_INFORMATION32
-    logger.warning('MEMORY_BASIC_INFORMATION32')
-    logger.info(info.AllocationBase)
-    logger.info(info.AllocationProtect)
-    logger.info(info.BaseAddress)
-    logger.info(info.RegionSize)
-    logger.info(info.State)
-    logger.info(info.Protect)
-
     data = psutil.pids()
     processes = []
     for i in data:
@@ -56,8 +45,13 @@ def second():
             pdict['pid'] = i
             pdict['rss'] = p.memory_info()[0]  # размер страниц памяти выделенных процессу
             pm = pymem.Pymem(str(p.name()))
-            pdict['base (start) address'] = decimalToHexadecimal(pm.base_address)
-            pdict['end address'] = decimalToHexadecimal(pm.base_address + p.memory_info()[0])
+            info = pymem.memory.virtual_query(pm.process_handle, pm.base_address)
+            pdict['Base Address'] = decimalToHexadecimal(pm.base_address)
+            pdict['End Address'] = decimalToHexadecimal(pm.base_address + p.memory_info()[0])
+            pdict['Allocation Base'] = info.AllocationBase
+            pdict['Allocation Protect'] = info.AllocationProtect
+            pdict['Region Size'] = info.RegionSize
+            pdict['Protect'] = info.Protect
             processes.append(pdict)
         except Exception as e:
             pass
