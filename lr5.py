@@ -11,6 +11,7 @@ conversion_table = {0: '0', 1: '1', 2: '2', 3: '3', 4: '4',
                     13: 'D', 14: 'E', 15: 'F'}
 
 def decimalToHexadecimal(decimal):
+    # перевод в 16-ричную систему
     hexadecimal = ''
     while(decimal > 0):
         remainder = decimal % 16
@@ -22,6 +23,7 @@ def decimalToHexadecimal(decimal):
 def first():
     data = GlobalMemoryStatus()
     print(data)
+    # составляю таблицу загрузки памяти
     graph = [
         data['MemoryLoad'] / 100,
         data['AvailPhys'] / data['TotalPhys'],
@@ -45,6 +47,7 @@ def second():
             pdict['pid'] = i
             pdict['rss'] = p.memory_info()[0]  # размер страниц памяти выделенных процессу
             pm = pymem.Pymem(str(p.name()))
+            # просто параметры для составления карты
             info = pymem.memory.virtual_query(pm.process_handle, pm.base_address)
             pdict['Base Address'] = decimalToHexadecimal(pm.base_address)
             pdict['End Address'] = decimalToHexadecimal(pm.base_address + p.memory_info()[0])
@@ -60,4 +63,5 @@ def second():
         print(i)
 
 
+first()
 second()
